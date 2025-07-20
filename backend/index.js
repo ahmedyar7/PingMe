@@ -1,13 +1,15 @@
 import "dotenv/config";
+import { app } from "./app.js";
+import { connectDb } from "./src/database/connectDb.database.js";
 
-import express from "express";
-
-const app = express();
-
-// Authntication
-import { authRoutes } from "./src/routes/auth.routes.js";
-app.use("/api/auth", authRoutes);
-
-app.listen(process.env.PORT || 8000, (req, res) => {
-  console.log(`✅ Server is Running on http://localhost:${process.env.PORT}`);
-});
+connectDb()
+  .then(() => {
+    app.listen(process.env.PORT || 3000, (req, res) => {
+      console.log(
+        `✅ Server is running on http://localhost:${process.env.PORT}`
+      );
+    });
+  })
+  .catch((error) => {
+    console.log("❌ Error connecting the the server");
+  });
