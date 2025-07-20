@@ -5,8 +5,9 @@ class ApiError extends Error {
     errors = [],
     stack
   ) {
+    super(message); // ✅ call parent constructor first
+
     this.statusCode = statusCode;
-    this.message = message;
     this.errors = errors;
 
     if (stack) {
