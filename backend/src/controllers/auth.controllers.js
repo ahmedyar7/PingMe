@@ -144,9 +144,34 @@ const login = AsyncHandler(async (req, res, next) => {
 
 const logout = AsyncHandler(async (req, res, next) => {
   try {
+    const loggedOutUser = await User.findByIdAndUpdate(
+      req.user._id,
+      { $set: { refreshToken: undefined } },
+      { new: true }
+    );
+
+    if (!loggedOutUser) {
+      console.log("❌ User with this credentials donot exist Logout failed");
+      throw new ApiError(
+        401,
+        "User with this credentials donot exist Logout failed"
+      );
+    }
+
+    // Handling the cookies
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
+
+    return res
+      .status(200)
+      .clearCookie("accessToken", options)
+      .clearCookie("refreshToken", options)
+      .json(new ApiResponse(200, {}, "User logged out successfully"));
   } catch (error) {
-    console.log("❌ Error in logout() function");
-    next();
+    console.log("❌ Error in logout() function", error);
+    next(error);
   }
 });
 

@@ -9,7 +9,6 @@ const verifyJWT = AsyncHandler(async (req, res, next) => {
     const token =
       req?.cookies?.accessToken ||
       req.header("Authorization")?.replace("Bearer ", "");
-    console.log("Access Token found:", token);
 
     if (!token) {
       console.log("❌ Access token does not exist for verification");
