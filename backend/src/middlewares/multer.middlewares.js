@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 
 // Build absolute path safely
-const uploadDir = path.resolve("backend/src/public/temp");
+const uploadDir = path.resolve("/public/temp");
 
 // Ensure the folder exists
 if (!fs.existsSync(uploadDir)) {

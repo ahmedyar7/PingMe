@@ -158,7 +158,6 @@ const logout = AsyncHandler(async (req, res, next) => {
       );
     }
 
-    // Handling the cookies
     const options = {
       httpOnly: true,
       secure: true,
@@ -175,4 +174,59 @@ const logout = AsyncHandler(async (req, res, next) => {
   }
 });
 
-export { signUp, login, logout };
+const updateProfile = AsyncHandler(async (req, res, next) => {
+  try {
+    // Update fullname, email, password
+    const { fullname, email, password } = req.body;
+
+    if (!(fullname?.trim() && email?.trim() && password?.trim())) {
+      console.log("❌ User credentials were not found to update the profile");
+      throw new ApiError(401, "User Credentials were not found");
+    }
+
+    // Check is any user with same email and full name exist
+    const existedUser = await User.findOne({
+      $or: [{ fullname }, { email }],
+    });
+
+    if (existedUser) {
+      console.log("❌ User with this email or fullname already exist");
+      throw new ApiError(
+        401,
+        "User with this email and password already exist"
+      );
+    }
+
+    // Update the credentials
+    const updatedUser = await User.findByIdAndUpdate(req?.user?._id, {
+      fullname,
+      email,
+      password,
+    });
+
+    if (updatedUser) {
+      console.log("✅ User Profile Updated Successfully");
+
+      return res
+        .status(200)
+        .json(
+          new ApiResponse(200, updatedUser, "User Profile Updated Successfully")
+        );
+    }
+
+    console.log("❌ Failed To update the user profile");
+  } catch (error) {
+    console.log("❌ Error in updateProfile() function", error);
+    next(error);
+  }
+});
+
+const updateProfilePicture = AsyncHandler(async (req, res, next) => {
+  try {
+  } catch (error) {
+    console.log("❌ Error in updateProfile() function", error);
+    next(error);
+  }
+});
+
+export { signUp, login, logout, updateProfile };
