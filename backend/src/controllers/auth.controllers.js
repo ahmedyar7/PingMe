@@ -265,4 +265,22 @@ const updateProfilePicture = AsyncHandler(async (req, res, next) => {
   }
 });
 
-export { signUp, login, logout, updateProfile, updateProfilePicture };
+const checkAuth = AsyncHandler(async (req, res, next) => {
+  try {
+    res
+      .status(200)
+      .json(new ApiResponse(200, req.user._id, "User is authenticated"));
+  } catch (error) {
+    console.log("Error in checkAuth controller", error);
+    next(error);
+  }
+});
+
+export {
+  signUp,
+  login,
+  logout,
+  updateProfile,
+  updateProfilePicture,
+  checkAuth,
+};

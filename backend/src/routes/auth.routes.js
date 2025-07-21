@@ -7,6 +7,7 @@ import {
   signUp,
   updateProfile,
   updateProfilePicture,
+  checkAuth,
 } from "../controllers/auth.controllers.js";
 
 const authRouter = Router();
@@ -28,4 +29,5 @@ authRouter
   .route("/updateProfilePicture")
   .patch(verifyJWT, upload.single("profilePicture"), updateProfilePicture);
 
+authRouter.route("/checkAuth").get(verifyJWT, checkAuth);
 export { authRouter };
