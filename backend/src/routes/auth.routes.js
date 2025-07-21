@@ -6,6 +6,7 @@ import {
   logout,
   signUp,
   updateProfile,
+  updateProfilePicture,
 } from "../controllers/auth.controllers.js";
 
 const authRouter = Router();
@@ -21,5 +22,10 @@ authRouter.route("/logout").post(verifyJWT, logout);
 
 //  Update USer Profile
 authRouter.route("/updateProfile").patch(verifyJWT, updateProfile);
+
+//  Update USer ProfilePicture
+authRouter
+  .route("/updateProfilePicture")
+  .patch(verifyJWT, upload.single("profilePicture"), updateProfilePicture);
 
 export { authRouter };

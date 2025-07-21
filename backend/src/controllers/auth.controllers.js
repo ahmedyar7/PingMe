@@ -2,7 +2,10 @@ import { AsyncHandler } from "../utils/AsyncHandler.utils.js";
 import { ApiError } from "../utils/ApiError.utils.js";
 import { ApiResponse } from "../utils/ApiResponse.utils.js";
 import { User } from "../models/user.models.js";
-import { uploadOnCloudinary } from "../utils/uploadOnCloudinary.utils.js";
+import {
+  uploadOnCloudinary,
+  deleteFromCloudinary,
+} from "../utils/uploadOnCloudinary.utils.js";
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
@@ -223,10 +226,43 @@ const updateProfile = AsyncHandler(async (req, res, next) => {
 
 const updateProfilePicture = AsyncHandler(async (req, res, next) => {
   try {
+    const profilePictureLocalPath = req?.file?.path;
+
+    if (!profilePictureLocalPath) {
+      console.log("❌ Profile Picture Local Path Donot exist");
+      throw new ApiError(401, "Profile Image local Path donot exist");
+    }
+
+    const uploadProfilePicture = await uploadOnCloudinary(
+      profilePictureLocalPath
+    );
+
+    if (!uploadProfilePicture) {
+      console.log("❌ Failed to upload new image on cloudinary");
+      throw new ApiError(401, "Failed to upload new image on cloudinary");
+    }
+    // Remove the prvious
+    const updatedProfilePicture = await User.findByIdAndUpdate(req?.user?._id, {
+      profilePicture: uploadProfilePicture?.secure_url,
+    });
+
+    if (updatedProfilePicture) {
+      console.log("✅ Profile Picture was updated successfully");
+
+      return res
+        .status(200)
+        .json(
+          new ApiResponse(
+            200,
+            updatedProfilePicture,
+            "Profile Picture was upadted Successfully"
+          )
+        );
+    }
   } catch (error) {
-    console.log("❌ Error in updateProfile() function", error);
+    console.log("❌ Error in updateProfilePicture() function", error);
     next(error);
   }
 });
 
-export { signUp, login, logout, updateProfile };
+export { signUp, login, logout, updateProfile, updateProfilePicture };

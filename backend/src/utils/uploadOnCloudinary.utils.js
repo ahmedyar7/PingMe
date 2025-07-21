@@ -26,4 +26,23 @@ const uploadOnCloudinary = async (filename) => {
   }
 };
 
-export { uploadOnCloudinary };
+const deleteFromCloudinary = async (publicId) => {
+  try {
+    const deleteResult = await cloudinary.uploader.destroy(publicId, {
+      resource_type: "image", // or "auto" if you upload mixed types
+    });
+
+    if (deleteResult.result !== "ok") {
+      console.log("❌ Failed to delete file from Cloudinary:", deleteResult);
+      return null;
+    } else {
+      console.log("✅ File was deleted successfully from Cloudinary");
+      return deleteResult;
+    }
+  } catch (error) {
+    console.log("❌ Error in deleteFromCloudinary() function:", error);
+    throw new ApiError(401, "Error deleting file from Cloudinary");
+  }
+};
+
+export { uploadOnCloudinary, deleteFromCloudinary };
