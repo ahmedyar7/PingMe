@@ -21,8 +21,6 @@ const UserSchema = new mongoose.Schema(
     password: {
       type: String,
       trim: true,
-      unique: true,
-      lowercase: true,
     },
 
     profilePicture: {
@@ -39,54 +37,36 @@ const UserSchema = new mongoose.Schema(
   }
 );
 
-// Hashing the password
+// Hash password before saving
 UserSchema.pre("save", async function () {
-  try {
-    await bcryptjs.hash(this.password, 10);
-    console.log("✅ Password are hashed successfully");
-  } catch (error) {
-    console.log("❌ Error occoured while hashing the password");
-  }
+  if (!this.isModified("password")) return; // avoid hashing again on update
+  this.password = await bcryptjs.hash(this.password, 10);
+  console.log("✅ Password hashed successfully");
 });
 
-// Check the password correction
-UserSchema.method.isPasswordCorrect = async function (password) {
-  try {
-    const isMatch = await bcryptjs.compare(password, this.password);
-
-    if (isMatch) console.log("✅ Password Successfully Hashed");
-  } catch (error) {
-    console.log("❌ The Plain & Hashed Password didnot match");
-  }
+// Check password correctness
+UserSchema.methods.isPasswordCorrect = async function (password) {
+  return await bcryptjs.compare(password, this.password);
 };
 
-// Access token generation
-UserSchema.method.generateAccessToken = function () {
+// Generate access token
+UserSchema.methods.generateAccessToken = function () {
   return jwt.sign(
     {
       _id: this._id,
       email: this.email,
-      password: this.password,
       fullname: this.fullname,
     },
     process.env.ACCESS_TOKEN_SECRET,
-    {
-      expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
-    }
+    { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
   );
 };
 
-// Refresh token generation
-UserSchema.method.generateAccessToken = function () {
-  return jwt.sign(
-    {
-      _id: this._id,
-    },
-    process.env.REFRESH_TOKEN_SECRET,
-    {
-      expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
-    }
-  );
+// Generate refresh token
+UserSchema.methods.generateRefreshToken = function () {
+  return jwt.sign({ _id: this._id }, process.env.REFRESH_TOKEN_SECRET, {
+    expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
+  });
 };
 
 export const User = mongoose.model("User", UserSchema);
