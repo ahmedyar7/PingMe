@@ -22,4 +22,8 @@ app.use(cookieParser());
 import { authRouter } from "./src/routes/auth.routes.js";
 app.use("/api/v1/auth", authRouter);
 
+// Message Router
+import { messageRouter } from "./src/routes/messages.routes.js";
+app.use("/api/v1/message", messageRouter);
+
 export { app };
