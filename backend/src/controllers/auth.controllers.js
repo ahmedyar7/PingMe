@@ -47,20 +47,16 @@ const signUp = AsyncHandler(async (req, res, next) => {
       );
     }
 
-    const profilePictureLocalPath = req?.file?.path;
+    // const profilePictureLocalPath = req?.file?.path;
 
-    if (!profilePictureLocalPath) {
-      throw new ApiError(400, "No profile picture uploaded");
-    }
+    // const profilePictureUpload = await uploadOnCloudinary(
+    //   profilePictureLocalPath
+    // );
 
-    const profilePictureUpload = await uploadOnCloudinary(
-      profilePictureLocalPath
-    );
-
-    if (!profilePictureUpload) {
-      console.log("❌ Failed to fetch Profile Picture URL");
-      throw new ApiError(401, "Failed to fetch Profile Picture URL");
-    }
+    // if (!profilePictureUpload) {
+    //   console.log("❌ Failed to fetch Profile Picture URL");
+    //   throw new ApiError(401, "Failed to fetch Profile Picture URL");
+    // }
 
     // Check if the user already exist
     const existedUser = await User.findOne({ email });
@@ -74,7 +70,7 @@ const signUp = AsyncHandler(async (req, res, next) => {
       email,
       fullname,
       password,
-      profilePicture: profilePictureUpload.secure_url, // use the secure_url from Cloudinary
+      // profilePicture: profilePictureUpload.secure_url, // use the secure_url from Cloudinary
     });
 
     const createdUser = await User.findById(user._id).select(
