@@ -13,7 +13,7 @@ import {
 const authRouter = Router();
 
 // Signpu
-authRouter.route("/signup").post(upload.single("profilePicture"), signUp);
+authRouter.route("/signup").post(signUp);
 
 // LogIn
 authRouter.route("/login").post(login);

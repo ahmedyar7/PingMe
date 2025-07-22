@@ -222,39 +222,44 @@ const updateProfile = AsyncHandler(async (req, res, next) => {
 
 const updateProfilePicture = AsyncHandler(async (req, res, next) => {
   try {
+    // ✅ multer should have put the file path here
     const profilePictureLocalPath = req?.file?.path;
 
     if (!profilePictureLocalPath) {
-      console.log("❌ Profile Picture Local Path Donot exist");
-      throw new ApiError(401, "Profile Image local Path donot exist");
+      console.log("❌ Profile Picture local path doesn't exist");
+      throw new ApiError(400, "Profile image file not provided");
     }
 
-    const uploadProfilePicture = await uploadOnCloudinary(
-      profilePictureLocalPath
-    );
+    // ✅ upload to cloudinary
+    const uploadedImage = await uploadOnCloudinary(profilePictureLocalPath);
 
-    if (!uploadProfilePicture) {
-      console.log("❌ Failed to upload new image on cloudinary");
-      throw new ApiError(401, "Failed to upload new image on cloudinary");
+    if (!uploadedImage?.secure_url) {
+      console.log("❌ Failed to upload image to Cloudinary");
+      throw new ApiError(500, "Failed to upload image to Cloudinary");
     }
-    // Remove the prvious
-    const updatedProfilePicture = await User.findByIdAndUpdate(req?.user?._id, {
-      profilePicture: uploadProfilePicture?.secure_url,
-    });
 
-    if (updatedProfilePicture) {
-      console.log("✅ Profile Picture was updated successfully");
+    // ✅ update user's profilePicture
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      { profilePicture: uploadedImage.secure_url },
+      { new: true }
+    ).select("-password -refreshToken"); // exclude sensitive fields
 
-      return res
-        .status(200)
-        .json(
-          new ApiResponse(
-            200,
-            updatedProfilePicture,
-            "Profile Picture was upadted Successfully"
-          )
-        );
+    if (!updatedUser) {
+      console.log("❌ User not found to update profile picture");
+      throw new ApiError(404, "User not found");
     }
+
+    console.log("✅ Profile picture updated successfully");
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          updatedUser,
+          "Profile picture updated successfully"
+        )
+      );
   } catch (error) {
     console.log("❌ Error in updateProfilePicture() function", error);
     next(error);
@@ -265,7 +270,7 @@ const checkAuth = AsyncHandler(async (req, res, next) => {
   try {
     res
       .status(200)
-      .json(new ApiResponse(200, req.user._id, "User is authenticated"));
+      .json(new ApiResponse(200, req.user, "User is authenticated"));
   } catch (error) {
     console.log("Error in checkAuth controller", error);
     next(error);

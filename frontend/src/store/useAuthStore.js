@@ -13,7 +13,7 @@ export const useAuthStore = create((set, get) => ({
     try {
       const res = await axiosInstance.get("/auth/checkAuth");
 
-      set({ authUser: res.data });
+      set({ authUser: res.data.data });
     } catch (error) {
       console.log("Error in checkAuth:", error);
       set({ authUser: null });
@@ -29,7 +29,7 @@ export const useAuthStore = create((set, get) => ({
       set({ authUser: res.data });
       toast.success("Account created successfully");
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Something went wrong!");
     } finally {
       set({ isSigningUp: false });
     }
@@ -42,7 +42,7 @@ export const useAuthStore = create((set, get) => ({
       set({ authUser: null });
       toast.success("Logged out successfully");
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Something went wrong!");
     }
   },
 
@@ -53,9 +53,34 @@ export const useAuthStore = create((set, get) => ({
       set({ authUser: res.data });
       toast.success("Logged in successfully");
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Something went wrong!");
+      console.log(error.response.data.message);
     } finally {
       set({ isLoggingIn: false });
+    }
+  },
+
+  updateProfilePicture: async (data) => {
+    set({ isUpdatingProfile: true });
+    try {
+      console.log("⚡ Calling backend to update profile...");
+      const res = await axiosInstance.patch(
+        "/auth/updateProfilePicture",
+        data,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log(res.data.data);
+      set({ authUser: res.data.data }); // ✅ use res.data.data, not res.data
+      toast.success(res.data.message || "Profile updated successfully");
+    } catch (error) {
+      console.log("error in update profile:", error);
+      toast.error(error.response?.data?.message || "Something went wrong!");
+    } finally {
+      set({ isUpdatingProfile: false });
     }
   },
 }));
