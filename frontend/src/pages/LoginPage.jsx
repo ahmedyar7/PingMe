@@ -36,7 +36,7 @@ const LoginPage = () => {
               Welcome Back
             </h1>
             <p className="text-base-content/60 text-sm">
-              Sign in to continue your journey
+              Log in to continue your journey
             </p>
           </div>
 
@@ -115,7 +115,7 @@ const LoginPage = () => {
                   Signing in...
                 </>
               ) : (
-                "Sign in"
+                "Log In"
               )}
             </button>
           </form>
