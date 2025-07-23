@@ -1,36 +1,46 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import NavBar from "./components/NavBar";
+import Navbar from "./components/Navbar";
+
 import HomePage from "./pages/HomePage";
 import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
 import SettingsPage from "./pages/SettingsPage";
 import ProfilePage from "./pages/ProfilePage";
-import { axiosInstance } from "./lib/axios.js";
-import { useAuthStore } from "./store/useAuthStore.js";
+
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useAuthStore } from "./store/useAuthStore";
+import { useThemeStore } from "./store/useThemeStore";
 import { useEffect } from "react";
+
 import { Loader } from "lucide-react";
 import { Toaster } from "react-hot-toast";
 
 const App = () => {
-  const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+  const { authUser, checkAuth, isCheckingAuth, onlineUsers } = useAuthStore();
+  const { theme } = useThemeStore();
+
+  useEffect(() => {
+    if (theme) {
+      document.documentElement.setAttribute("data-theme", theme);
+    }
+  }, [theme]);
 
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
 
-  console.log(authUser);
+  console.log({ authUser });
 
-  if (isCheckingAuth && !authUser) {
+  if (isCheckingAuth && !authUser)
     return (
-      <div className="flex items-center justify-center h-screen w-screen">
-        <Loader className="animate-spin h-12 w-12 text-gray-500" />
+      <div className="flex items-center justify-center h-screen">
+        <Loader className="size-10 animate-spin" />
       </div>
-    ); // Show a loading state while checking auth){
-  }
+    );
 
   return (
-    <div>
-      <NavBar />
+    <div data-theme={theme}>
+      <Navbar />
+
       <Routes>
         <Route
           path="/"
@@ -50,9 +60,9 @@ const App = () => {
           element={authUser ? <ProfilePage /> : <Navigate to="/login" />}
         />
       </Routes>
+
       <Toaster />
     </div>
   );
 };
-
 export default App;

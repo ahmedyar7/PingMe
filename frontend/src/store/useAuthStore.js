@@ -1,6 +1,9 @@
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios.js";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+
+const navigate = useNavigate();
 
 export const useAuthStore = create((set, get) => ({
   authUser: null,
@@ -35,14 +38,14 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
-  logout: async () => {
+  logout: async (navigate) => {
     try {
       await axiosInstance.post("/auth/logout");
-
       set({ authUser: null });
       toast.success("Logged out successfully");
+      navigate("/login");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Something went wrong!");
+      console.log("error logging out", error);
     }
   },
 

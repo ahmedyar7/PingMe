@@ -22,7 +22,7 @@ const AuthImagePattern = ({
         {/* Contact Header */}
         <div className="flex items-center gap-3 text-left mb-4 px-1">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center text-white text-xs font-bold">
-            A
+            AY
           </div>
           <div>
             <p className="text-sm font-medium text-gray-800 dark:text-gray-100">
