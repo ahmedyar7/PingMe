@@ -135,12 +135,8 @@ const LoginPage = () => {
       </div>
 
       {/* Right Side - Image/Pattern */}
-      <AuthImagePattern
-        title={"PingMe"}
-        subtitle={
-          "Sign in to continue your conversations and catch up with your messages."
-        }
-      />
+
+      <AuthImagePattern />
     </div>
   );
 };

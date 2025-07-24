@@ -17,7 +17,7 @@ messageRouter.route("/:id").get(verifyJWT, fetchMessagesBasedUponId);
 
 // SEnd message based upon userId
 messageRouter
-  .route("/user/:id")
+  .route("/send/:id")
   .post(verifyJWT, upload.single("image"), sendMessagesBasedUponId);
 
 export { messageRouter };

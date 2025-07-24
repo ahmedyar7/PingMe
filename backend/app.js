@@ -5,8 +5,6 @@ import globalErrorHandler from "./src/middlewares/globalErrorHandler.middlewares
 
 const app = express();
 
-console.log("✅ Origin: ", process.env.CORS_ORIGIN);
-
 app.use(
   cors({
     origin: "http://localhost:5173",

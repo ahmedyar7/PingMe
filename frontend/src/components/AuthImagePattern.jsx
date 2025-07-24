@@ -1,4 +1,5 @@
 import React from "react";
+import TextType from "../reactBits/TextType.jsx";
 
 const AuthImagePattern = ({
   title = "PingMe",
@@ -8,9 +9,17 @@ const AuthImagePattern = ({
     <div className="hidden lg:flex items-center justify-center p-8">
       <div className="max-w-sm text-center space-y-6 font-sans">
         {/* Brand Title at Top */}
-        <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500 bg-clip-text text-transparent tracking-tight">
-          {title}
-        </h1>
+
+        <TextType
+          text={["PingMe!!", "Connect with Friends"]}
+          as="h1"
+          typingSpeed={170}
+          deletingSpeed={100}
+          pauseDuration={2000}
+          loop={true}
+          textColors={["#eeeee4"]}
+          className="text-2xl font-bold tracking-tight text-white"
+        />
 
         {/* Subtitle */}
         <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">

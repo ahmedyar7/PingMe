@@ -1,9 +1,6 @@
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios.js";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
-
-const navigate = useNavigate();
 
 export const useAuthStore = create((set, get) => ({
   authUser: null,
@@ -14,7 +11,9 @@ export const useAuthStore = create((set, get) => ({
 
   checkAuth: async () => {
     try {
-      const res = await axiosInstance.get("/auth/checkAuth");
+      const res = await axiosInstance.get("/auth/checkAuth", {
+        withCredentials: true,
+      });
 
       set({ authUser: res.data.data });
     } catch (error) {
@@ -38,12 +37,13 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
-  logout: async (navigate) => {
+  logout: async () => {
     try {
       await axiosInstance.post("/auth/logout");
       set({ authUser: null });
       toast.success("Logged out successfully");
-      navigate("/login");
+      // ❌ remove navigate("/login");
+      // Component will handle navigation after logout
     } catch (error) {
       console.log("error logging out", error);
     }
@@ -77,7 +77,7 @@ export const useAuthStore = create((set, get) => ({
         }
       );
       console.log(res.data.data);
-      set({ authUser: res.data.data }); // ✅ use res.data.data, not res.data
+      set({ authUser: res.data.data });
       toast.success(res.data.message || "Profile updated successfully");
     } catch (error) {
       console.log("error in update profile:", error);
