@@ -41,8 +41,8 @@ const fetchMessagesBasedUponId = AsyncHandler(async (req, res, next) => {
     const { id: userToChatId } = req.params;
 
     if (!userToChatId?.trim()) {
-      console.log("❌ userToChatid was not provided in the URL");
-      throw new ApiError(401, "userToChatid was not provided in the URL");
+      console.log("❌ userToChatId was not provided in the URL");
+      throw new ApiError(401, "userToChatId was not provided in the URL");
     }
 
     const myId = req?.user?._id;
@@ -54,31 +54,24 @@ const fetchMessagesBasedUponId = AsyncHandler(async (req, res, next) => {
 
     const messages = await Message.find({
       $or: [
-        { myId: myId, receiverId: userToChatId },
-        { myId: userToChatId, receiverId: myId },
+        { senderId: myId, receiverId: userToChatId },
+        { senderId: userToChatId, receiverId: myId },
       ],
-    });
+    }).sort({ createdAt: 1 }); // optional: sort by oldest → newest
 
-    if (messages) {
-      console.log(
-        "✅ Message was successfully fetched based upon userToChatId"
+    console.log("✅ Messages successfully fetched based upon userToChatId");
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          messages,
+          "Messages successfully fetched based upon userToChatId"
+        )
       );
-
-      return res
-        .status(200)
-        .json(
-          new ApiResponse(
-            200,
-            messages,
-            "Message was successfully fetched based upon userToChatId"
-          )
-        );
-    }
-
-    console.log("❌ Failed to fetch Message based upon userToChatId");
-    throw new ApiError(401, "Failed to fetch Message based upon userToChatId");
   } catch (error) {
-    console.log("❌ Error in function fetchMessagesBasedUponId()");
+    console.log("❌ Error in function fetchMessagesBasedUponId():", error);
     next(error);
   }
 });
