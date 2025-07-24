@@ -86,45 +86,43 @@ const fetchMessagesBasedUponId = AsyncHandler(async (req, res, next) => {
 const sendMessagesBasedUponId = AsyncHandler(async (req, res, next) => {
   try {
     const { text } = req.body;
-
-    if (!text?.trim()) {
-      console.log("❌ Text is not provided in the request body");
-      throw new ApiError(401, "Text is not provided in request body");
-    }
-
     const { id: receiverId } = req.params;
+    const senderId = req?.user?._id;
 
+    // Validate IDs
     if (!mongoose.isValidObjectId(receiverId)) {
       console.log("❌ Receiver ID is not valid");
       throw new ApiError(401, "Receiver ID is not valid");
     }
-
-    const senderId = req?.user?._id;
     if (!mongoose.isValidObjectId(senderId)) {
       console.log("❌ Sender ID is not valid");
       throw new ApiError(401, "Sender ID is not valid");
     }
 
-    // Get uploaded file path
+    // Get uploaded file path if present
     const imageLocalPath = req?.file?.path;
-    if (!imageLocalPath) {
-      console.log("❌ Image file was not uploaded");
-      throw new ApiError(401, "Image file was not uploaded");
+    let uploadedImage = null;
+
+    if (imageLocalPath) {
+      uploadedImage = await uploadOnCloudinary(imageLocalPath);
+      if (!uploadedImage?.secure_url) {
+        console.log("❌ Failed to upload image to Cloudinary");
+        throw new ApiError(500, "Failed to upload image to Cloudinary");
+      }
     }
 
-    // Upload to Cloudinary
-    const uploadImage = await uploadOnCloudinary(imageLocalPath);
-    if (!uploadImage) {
-      console.log("❌ Failed to upload image to Cloudinary");
-      throw new ApiError(500, "Failed to upload image to Cloudinary");
+    // Make sure at least text or image exists
+    if (!(text?.trim() || uploadedImage?.secure_url)) {
+      console.log("❌ Message must have text or image");
+      throw new ApiError(400, "Message must have text or image");
     }
 
     // Create message
     const message = await Message.create({
       senderId,
       receiverId,
-      text,
-      image: uploadImage.secure_url,
+      text: text?.trim() || null, // store as null if empty
+      image: uploadedImage?.secure_url || null,
     });
 
     if (!message) {
@@ -133,7 +131,6 @@ const sendMessagesBasedUponId = AsyncHandler(async (req, res, next) => {
     }
 
     console.log("✅ Message sent successfully");
-
     return res
       .status(200)
       .json(new ApiResponse(200, message, "Successfully created message"));

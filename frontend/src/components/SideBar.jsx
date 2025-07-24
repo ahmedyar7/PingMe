@@ -2,11 +2,12 @@ import React, { useEffect } from "react";
 import { useChatStore } from "../store/useChatStore.js";
 import SideBarSkeleton from "./skeletons/SideBarSkeleton.jsx";
 import { Users } from "lucide-react";
+import { useAuthStore } from "../store/useAuthStore.js";
 
 export const SideBar = () => {
   const { getUsers, users, selectedUser, isUsersLoading, setSelectedUser } =
     useChatStore();
-  const onlineUsers = []; // you’ll fill this later with real data
+  const { onlineUsers } = useAuthStore(); // you’ll fill this later with real data
 
   useEffect(() => {
     getUsers();
@@ -42,7 +43,7 @@ export const SideBar = () => {
               `}>
               <div className="relative mx-auto lg:mx-0">
                 <img
-                  src={user.profilePic || "/avatar.png"}
+                  src={user.profilePicture || "/avatar.png"}
                   alt={user.name}
                   className="size-12 object-cover rounded-full"
                 />
@@ -56,7 +57,7 @@ export const SideBar = () => {
 
               {/* User info - only visible on larger screens */}
               <div className="hidden lg:block text-left min-w-0">
-                <div className="font-medium truncate">{user.fullName}</div>
+                <div className="font-medium truncate">{user.fullname}</div>
                 <div className="text-sm text-zinc-400">
                   {onlineUsers.includes(user._id) ? "Online" : "Offline"}
                 </div>
