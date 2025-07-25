@@ -95,23 +95,18 @@ export const useAuthStore = create((set, get) => ({
       set({ isUpdatingProfile: false });
     }
   },
-
   connectSocket: () => {
     const { authUser, socket } = get();
 
     if (!authUser) return;
 
-    // Avoid creating multiple sockets
     if (socket) {
       if (!socket.connected) socket.connect();
       return;
     }
 
-    const newSocket = io(BASE_URL, {
-      withCredentials: true,
-    });
+    const newSocket = io(BASE_URL, { withCredentials: true });
 
-    // when connected, emit the addUser event
     newSocket.on("connect", () => {
       console.log("Connected to socket:", newSocket.id);
       newSocket.emit("addUser", authUser._id);
@@ -119,6 +114,13 @@ export const useAuthStore = create((set, get) => ({
 
     newSocket.on("disconnect", () => {
       console.log("Disconnected from socket");
+    });
+
+    // 🧩 Listen and add online users to the array
+    newSocket.on("onlineUsers", (users) => {
+      console.log("📡 Received online users:", users);
+      // here, `users` is the array from the server
+      set({ onlineUsers: users });
     });
 
     set({ socket: newSocket });

@@ -19,6 +19,8 @@ const App = () => {
   const { authUser, checkAuth, isCheckingAuth, onlineUsers } = useAuthStore();
   const { theme } = useThemeStore();
 
+  console.log(`Online Users: ${onlineUsers}`);
+
   useEffect(() => {
     if (theme) {
       document.documentElement.setAttribute("data-theme", theme);
