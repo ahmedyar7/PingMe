@@ -13,6 +13,7 @@ import { Link } from "react-router-dom";
 
 import AuthImagePattern from "../components/AuthImagePattern";
 import toast from "react-hot-toast";
+// import TextType from "../reactBits/TextType.jsx";
 
 const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -160,8 +161,6 @@ const SignUpPage = () => {
           </div>
         </div>
       </div>
-
-      {/* right side */}
 
       <AuthImagePattern
         title="Join our community"

@@ -11,7 +11,7 @@ const AuthImagePattern = ({
         {/* Brand Title at Top */}
 
         <TextType
-          text={["PingMe!!", "Connect with Friends"]}
+          text={["PingMe!", "Login To Connect"]}
           as="h1"
           typingSpeed={170}
           deletingSpeed={100}
