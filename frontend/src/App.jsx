@@ -13,6 +13,7 @@ import { useEffect } from "react";
 
 import { Loader } from "lucide-react";
 import { Toaster } from "react-hot-toast";
+import LostPage from "./components/LostPage";
 
 const App = () => {
   const { authUser, checkAuth, isCheckingAuth, onlineUsers } = useAuthStore();
@@ -59,6 +60,7 @@ const App = () => {
           path="/profile"
           element={authUser ? <ProfilePage /> : <Navigate to="/login" />}
         />
+        <Route path="*" element={<LostPage />} />
       </Routes>
 
       <Toaster />

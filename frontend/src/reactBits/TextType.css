@@ -7,8 +7,13 @@
   margin-left: 0.25rem;
   display: inline-block;
   opacity: 1;
+  font-family: "Fira Code", monospace;
 }
 
 .text-type__cursor--hidden {
   display: none;
+}
+
+.text-type__content {
+  font-family: "Fira Code", monospace;
 }

@@ -1,8 +1,6 @@
 import { Server } from "socket.io";
-import http from "http";
 
 let io; // define at module scope so you can export
-
 const userSocketMap = {}; // { userId: socketId }
 
 function initSocket(server) {
@@ -19,17 +17,27 @@ function initSocket(server) {
     socket.on("addUser", (userId) => {
       userSocketMap[userId] = socket.id;
       console.log("📌 Mapped user:", userId, "to socket:", socket.id);
+
+      // emit updated online users to everyone
+      io.emit("onlineUsers", Object.keys(userSocketMap));
     });
 
     socket.on("disconnect", () => {
-      // Optionally remove the user from map
+      let disconnectedUserId = null;
+
+      // remove userId from map
       for (const [userId, id] of Object.entries(userSocketMap)) {
         if (id === socket.id) {
+          disconnectedUserId = userId;
           delete userSocketMap[userId];
           break;
         }
       }
+
       console.log("❌ User disconnected:", socket.id);
+
+      // emit updated online users to everyone
+      io.emit("onlineUsers", Object.keys(userSocketMap));
     });
   });
 }
