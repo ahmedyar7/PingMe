@@ -97,13 +97,39 @@ export const useAuthStore = create((set, get) => ({
   },
 
   connectSocket: () => {
-    const { authUser } = get();
+    const { authUser, socket } = get();
 
-    if (!authUser || get().socket?.connected) return;
+    if (!authUser) return;
 
-    const socket = io(BASE_URL);
-    socket.connect();
+    // Avoid creating multiple sockets
+    if (socket) {
+      if (!socket.connected) socket.connect();
+      return;
+    }
+
+    const newSocket = io(BASE_URL, {
+      withCredentials: true,
+    });
+
+    // when connected, emit the addUser event
+    newSocket.on("connect", () => {
+      console.log("Connected to socket:", newSocket.id);
+      newSocket.emit("addUser", authUser._id);
+    });
+
+    newSocket.on("disconnect", () => {
+      console.log("Disconnected from socket");
+    });
+
+    set({ socket: newSocket });
   },
 
-  disconnectSocket: () => {},
+  disconnectSocket: () => {
+    const { socket } = get();
+    if (socket) {
+      socket.disconnect();
+      console.log("👋 Socket disconnected manually");
+      set({ socket: null }); // clear socket from store
+    }
+  },
 }));
