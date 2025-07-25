@@ -47,4 +47,8 @@ function getReceiverSocketId(userId) {
   return userSocketMap[userId];
 }
 
-export { initSocket, getReceiverSocketId, userSocketMap };
+function getIo() {
+  return io;
+}
+
+export { initSocket, getReceiverSocketId, userSocketMap, getIo };

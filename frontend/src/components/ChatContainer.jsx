@@ -7,15 +7,29 @@ import { useAuthStore } from "../store/useAuthStore.js";
 import { formatMessageTime } from "../lib/utils.js";
 
 const ChatContainer = () => {
-  const { messages, getMessages, isMessagesLoading, selectedUser } =
-    useChatStore();
+  const {
+    messages,
+    getMessages,
+    isMessagesLoading,
+    selectedUser,
+    subscribeToMessages,
+    unsubscribeFromMessages,
+  } = useChatStore();
   const { authUser } = useAuthStore();
 
   const messageEndRef = useRef(null);
 
   useEffect(() => {
+    if (!selectedUser?._id) return;
     getMessages(selectedUser._id);
-  }, [selectedUser._id, getMessages]);
+    subscribeToMessages();
+    return () => unsubscribeFromMessages();
+  }, [
+    selectedUser?._id,
+    getMessages,
+    subscribeToMessages,
+    unsubscribeFromMessages,
+  ]);
 
   // Auto scroll when messages change
   useEffect(() => {
@@ -56,7 +70,9 @@ const ChatContainer = () => {
             </div>
             <div className="chat-header mb-1">
               <time className="text-xs opacity-50 ml-1">
-                {formatMessageTime(message.createdAt)}
+                {message.createdAt
+                  ? formatMessageTime(message.createdAt)
+                  : "--:--"}
               </time>
             </div>
             <div className="chat-bubble flex flex-col">

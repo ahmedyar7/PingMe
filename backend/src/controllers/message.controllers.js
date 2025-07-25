@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { get } from "mongoose";
 
 import { AsyncHandler } from "../utils/AsyncHandler.utils.js";
 import { ApiError } from "../utils/ApiError.utils.js";
@@ -6,6 +6,7 @@ import { ApiResponse } from "../utils/ApiResponse.utils.js";
 import { User } from "../models/user.models.js";
 import { Message } from "../models/message.models.js";
 import { uploadOnCloudinary } from "../utils/uploadOnCloudinary.utils.js";
+import { getReceiverSocketId, getIo } from "../socket/socket.js";
 
 const fetchUsersForSideBar = AsyncHandler(async (req, res, next) => {
   try {
@@ -121,6 +122,14 @@ const sendMessagesBasedUponId = AsyncHandler(async (req, res, next) => {
     if (!message) {
       console.log("❌ Failed to create message in DB");
       throw new ApiError(500, "Failed to create message in DB");
+    }
+
+    const io = getIo();
+
+    const receiverSocketId = getReceiverSocketId(receiverId);
+
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("newMessage", message);
     }
 
     console.log("✅ Message sent successfully");
