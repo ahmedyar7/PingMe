@@ -100,7 +100,7 @@ const login = AsyncHandler(async (req, res, next) => {
 
     if (!(email?.trim() && password?.trim())) {
       console.log("❌ Credentials were not provided in the body");
-      throw new ApiError(401, "Credentials were not provided in the body");
+      throw new ApiError(401, "Credentials were not provided");
     }
 
     const user = await User.findOne({ email });
