@@ -167,6 +167,10 @@ const SignUpPage = () => {
         title="Join our community"
         subtitle="Connect with friends, share moments, and stay in touch with your loved ones."
       />
+
+      <div className="absolute bottom-4 w-full text-center text-xs text-base-content/40">
+        © {new Date().getFullYear()} Ahmed Yar™. All rights reserved.
+      </div>
     </div>
   );
 };

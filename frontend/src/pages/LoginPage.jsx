@@ -137,7 +137,12 @@ const LoginPage = () => {
       {/* Right Side - Image/Pattern */}
 
       <AuthImagePattern />
+      <div className="absolute bottom-4 w-full text-center text-xs text-base-content/40">
+        © {new Date().getFullYear()} Ahmed Yar™. All rights reserved.
+      </div>
     </div>
+
+    // </div>
   );
 };
 
