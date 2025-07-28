@@ -21,6 +21,7 @@ const UserSchema = new mongoose.Schema(
     password: {
       type: String,
       trim: true,
+      select: false,
     },
 
     profilePicture: {
@@ -28,9 +29,25 @@ const UserSchema = new mongoose.Schema(
       trim: true,
     },
 
+    lastLogin: {
+      type: Date,
+      default: Date.now,
+    },
+
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+
     refreshToken: {
       type: String,
+      select: false,
     },
+
+    resetPasswordToken: String,
+    resetPasswordExpiresAt: Date,
+    verificationToken: String,
+    verificationTokenExpiresAt: Date,
   },
   {
     timestamps: true,

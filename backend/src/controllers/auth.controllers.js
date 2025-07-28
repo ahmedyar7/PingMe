@@ -2,6 +2,7 @@ import { AsyncHandler } from "../utils/AsyncHandler.utils.js";
 import { ApiError } from "../utils/ApiError.utils.js";
 import { ApiResponse } from "../utils/ApiResponse.utils.js";
 import { User } from "../models/user.models.js";
+import jwt from "jsonwebtoken";
 import {
   uploadOnCloudinary,
   deleteFromCloudinary,
@@ -31,6 +32,21 @@ const generateAccessAndRefreshToken = async (userId) => {
   } catch (error) {
     console.log("❌ Error in generateAccessAndRefreshToken() function", error);
   }
+};
+
+const generateTokenAndSetCookies = (res, userId) => {
+  const token = jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, {
+    expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
+  });
+
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+
+  return token;
 };
 
 const signUp = AsyncHandler(async (req, res, next) => {
@@ -66,16 +82,24 @@ const signUp = AsyncHandler(async (req, res, next) => {
       throw new ApiError(401, "The User with this credentials exists");
     }
 
+    const verificationToken = Math.floor(
+      10000 + Math.random() * 90000
+    ).toString();
+
     const user = await User.create({
       email,
       fullname,
       password,
+      verificationToken,
+      verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000,
+
       // profilePicture: profilePictureUpload.secure_url, // use the secure_url from Cloudinary
     });
 
-    const createdUser = await User.findById(user._id).select(
-      "-password -refreshToken"
-    );
+    // JWT
+    generateTokenAndSetCookies(res, user._id);
+
+    const createdUser = await User.findById(user._id);
 
     if (createdUser) {
       console.log("✅ User was created successfully in the database");
@@ -103,7 +127,8 @@ const login = AsyncHandler(async (req, res, next) => {
       throw new ApiError(401, "Credentials were not provided");
     }
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select("+password");
+
     if (!user) {
       console.log("❌ User with this email does not exist");
       throw new ApiError(401, "Invalid email or password");
@@ -247,8 +272,7 @@ const updateProfilePicture = AsyncHandler(async (req, res, next) => {
       req.user._id,
       { profilePicture: uploadedImage.secure_url },
       { new: true }
-    ).select("-password -refreshToken"); // exclude sensitive fields
-
+    );
     if (!updatedUser) {
       console.log("❌ User not found to update profile picture");
       throw new ApiError(404, "User not found");

@@ -16,14 +16,11 @@ export const useAuthStore = create((set, get) => ({
 
   checkAuth: async () => {
     try {
-      const res = await axiosInstance.get("/auth/checkAuth", {
-        withCredentials: true,
-      });
-
+      const res = await axiosInstance.get("/auth/checkAuth");
       set({ authUser: res.data.data });
       get().connectSocket();
     } catch (error) {
-      console.log("Error in checkAuth:", error);
+      console.log("User not logged in yet (expected on first load)");
       set({ authUser: null });
     } finally {
       set({ isCheckingAuth: false });
@@ -33,14 +30,35 @@ export const useAuthStore = create((set, get) => ({
   signup: async (data) => {
     set({ isSigningUp: true });
     try {
-      const res = await axiosInstance.post("/auth/signup", data);
-      set({ authUser: res.data });
+      await axiosInstance.post("/auth/signup", data);
       toast.success("Account created successfully");
+
+      // ✅ Now fetch logged-in user info from backend
+      await get().checkAuth();
+
       get().connectSocket();
     } catch (error) {
       toast.error(error.response?.data?.message || "Something went wrong!");
     } finally {
       set({ isSigningUp: false });
+    }
+  },
+
+  login: async (data) => {
+    set({ isLoggingIn: true });
+    try {
+      await axiosInstance.post("/auth/login", data);
+      toast.success("Logged in successfully");
+
+      // ✅ Fetch user info
+      await get().checkAuth();
+
+      get().connectSocket();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Something went wrong!");
+      console.log(error.response?.data?.message);
+    } finally {
+      set({ isLoggingIn: false });
     }
   },
 
@@ -54,21 +72,6 @@ export const useAuthStore = create((set, get) => ({
       // Component will handle navigation after logout
     } catch (error) {
       console.log("error logging out", error);
-    }
-  },
-
-  login: async (data) => {
-    set({ isLoggingIn: true });
-    try {
-      const res = await axiosInstance.post("/auth/login", data);
-      set({ authUser: res.data });
-      toast.success("Logged in successfully");
-      get().connectSocket();
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Something went wrong!");
-      console.log(error.response.data.message);
-    } finally {
-      set({ isLoggingIn: false });
     }
   },
 
