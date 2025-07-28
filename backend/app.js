@@ -29,6 +29,12 @@ import { messageRouter } from "./src/routes/messages.routes.js";
 app.use("/api/v1/message", messageRouter);
 
 if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
+  });
 }
+
 app.use(globalErrorHandler);
 export { app };
