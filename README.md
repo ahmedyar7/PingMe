@@ -1,8 +1,9 @@
 <p align="center">
-  <img src="./assets/icon/logo.png" alt="IntelliMate Logo" width="120" />
+  <img src="./assets/pingme.png" alt="IntelliMate Logo" width="120" />
 </p>
-> A real-time chat application built with **MERN stack**, **WebSockets**, and modern UI libraries.  
-> Connect instantly, chat seamlessly, and stay in touch.
+
+A real-time chat application built with **MERN stack**, **WebSockets**, and modern UI libraries.  
+Connect instantly, chat seamlessly, and stay in touch.
 
 ---
 
