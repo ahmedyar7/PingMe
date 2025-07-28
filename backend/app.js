@@ -2,8 +2,11 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import globalErrorHandler from "./src/middlewares/globalErrorHandler.middlewares.js";
+import path from "path";
 
 const app = express();
+
+const __dirname = path.resolve();
 
 app.use(
   cors({
@@ -25,5 +28,7 @@ app.use("/api/v1/auth", authRouter);
 import { messageRouter } from "./src/routes/messages.routes.js";
 app.use("/api/v1/message", messageRouter);
 
+if (process.env.NODE_ENV === "production") {
+}
 app.use(globalErrorHandler);
 export { app };
