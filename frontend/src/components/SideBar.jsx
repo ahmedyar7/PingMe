@@ -9,6 +9,8 @@ export const SideBar = () => {
     useChatStore();
   const { onlineUsers } = useAuthStore(); // you’ll fill this later with real data
 
+  console.log("User id ", users?._id);
+
   useEffect(() => {
     getUsers();
   }, [getUsers]);
