@@ -4,9 +4,9 @@ import { app } from "./app.js";
 import http from "http";
 import { initSocket } from "./src/socket/socket.js";
 
-const server = http.createServer(app); // create HTTP server from the same app
+const server = http.createServer(app); // create HTTP server
 
-// Initialize socket.io on the server
+// Initialize socket.io
 initSocket(server);
 
 // Connect DB and start server

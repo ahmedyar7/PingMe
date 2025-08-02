@@ -25,21 +25,24 @@ app.use(express.urlencoded({ limit: "16kb" }));
 app.use(express.static("public"));
 app.use(cookieParser());
 
-// Auth Router
+// Routers
 import { authRouter } from "./src/routes/auth.routes.js";
-app.use("/api/v1/auth", authRouter);
-
-// Message Router
 import { messageRouter } from "./src/routes/messages.routes.js";
+
+app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/message", messageRouter);
 
+// Serve frontend in production
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
+  // ✅ FIX: name the catch-all param so path-to-regexp doesn't crash
+  app.get("/:catchAll(*)", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
   });
 }
 
+// Global error handler
 app.use(globalErrorHandler);
+
 export { app };
