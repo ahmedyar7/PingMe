@@ -36,9 +36,8 @@ app.use("/api/v1/message", messageRouter);
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-  // ✅ FIX: name the catch-all param so path-to-regexp doesn't crash
   app.get("/:catchAll(*)", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
+    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
   });
 }
 
