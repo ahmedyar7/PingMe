@@ -32,15 +32,6 @@ import { messageRouter } from "./src/routes/messages.routes.js";
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/message", messageRouter);
 
-// Serve frontend in production
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../frontend/dist")));
-
-  app.get("/:catchAll(*)", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
-  });
-}
-
 // Global error handler
 app.use(globalErrorHandler);
 
