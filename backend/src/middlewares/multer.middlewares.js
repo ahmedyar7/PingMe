@@ -2,8 +2,8 @@ import multer from "multer";
 import fs from "fs";
 import path from "path";
 
-// Build absolute path safely
-const uploadDir = path.resolve("/public/temp");
+// Use /tmp/uploads as upload dir
+const uploadDir = path.join("/tmp", "uploads");
 
 // Ensure the folder exists
 if (!fs.existsSync(uploadDir)) {
