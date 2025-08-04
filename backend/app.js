@@ -35,7 +35,17 @@ app.use("/api/v1/message", messageRouter);
 // Serve frontend in production
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
+// Replace this line in app.js:
 app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
+});
+
+// With this:
+app.get("/*", (req, res) => {
+  // Only serve index.html for non-API routes
+  if (req.path.startsWith("/api/")) {
+    return res.status(404).json({ message: "API route not found" });
+  }
   res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
 });
 
